@@ -2,3 +2,4 @@
 /.idea/
 /shelf/
 /workspace.xml
+/src/main/resources/contracts/artifacts/*.json
