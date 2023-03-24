@@ -1,6 +1,7 @@
 package com.ogunadsay.decentralizedsocial.service;
 
-import com.ogunadsay.decentralizedsocial.configuration.comment.CommentProperties;
+import com.ogunadsay.decentralizedsocial.configuration.GeneralProperties;
+import com.ogunadsay.decentralizedsocial.model.CommentDto;
 import com.ogunadsay.decentralizedsocial.model.CommentStorage;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.ClientTransactionManager;
@@ -12,26 +13,22 @@ import java.util.List;
 public class CommentService {
     private final String contractAddress;
     private final Web3j web3j;
-    private final CommentProperties config;
+    private final GeneralProperties config;
 
-    public CommentService(String contractAddress, Web3j web3j, CommentProperties config) {
+    public CommentService(String contractAddress, Web3j web3j, GeneralProperties config) {
         this.contractAddress = contractAddress;
         this.web3j = web3j;
         this.config = config;
     }
 
-//    public BigInteger getBalance() throws IOException {
-//        return web3j.ethGetBalance(contractAddress, DefaultBlockParameterName.LATEST).send().getBalance();
-//    }
-
-    public void addComment(String accountAddress, String commentContent) throws Exception {
+    public void addComment(String accountAddress, CommentDto commentDto) throws Exception {
         CommentStorage comment = loadContract(accountAddress);
-        comment.addComment(commentContent).send();
+        comment.addComment(commentDto.getPostId(), commentDto.getContent()).send();
     }
 
-    public List<CommentStorage> getComments(String accountAddress) throws Exception {
+    public List<CommentStorage> getComments(String accountAddress, BigInteger postId) throws Exception {
         CommentStorage comment = loadContract(accountAddress);
-        List<CommentStorage> list = comment.getComments().send();
+        List<CommentStorage> list = comment.getComments(postId).send();
         return list;
     }
 
