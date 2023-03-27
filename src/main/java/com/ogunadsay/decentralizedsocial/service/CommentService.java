@@ -32,6 +32,12 @@ public class CommentService {
         return list;
     }
 
+    public List<CommentStorage> getAllComments(String accountAddress) throws Exception {
+        CommentStorage comment = loadContract(accountAddress);
+        List<CommentStorage> allComments = comment.getAllComments().send();
+        return allComments;
+    }
+
     public void deleteComment(String accountAddress, BigInteger commentIndex) throws Exception {
         CommentStorage comment = loadContract(accountAddress);
         comment.deleteComment(commentIndex).send();

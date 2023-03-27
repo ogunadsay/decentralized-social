@@ -28,7 +28,7 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping("/posts/{id}/comments/")
+    @GetMapping("/posts/{id}/comments")
     public ResponseEntity<List<CommentStorage>> getComments(@PathVariable(name = "id") BigInteger id, @RequestHeader("X-wallet-account") String accountAddress) throws Exception {
         List<CommentStorage> comments = commentService.getComments(accountAddress, id);
         return new ResponseEntity<>(comments, HttpStatus.OK);

@@ -25,7 +25,7 @@ public class CommentController {
 
     @GetMapping("/comments")
     public ResponseEntity<List<CommentStorage>> getComments(@RequestHeader("X-wallet-account") String accountAddress) throws Exception {
-        List<CommentStorage> comments = commentService.getComments(accountAddress, BigInteger.valueOf(1));
+        List<CommentStorage> comments = commentService.getAllComments(accountAddress);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
