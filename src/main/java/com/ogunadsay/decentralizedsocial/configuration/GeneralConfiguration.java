@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.util.StringUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
@@ -38,7 +39,7 @@ public class GeneralConfiguration {
 
     private String postContractAddress;
 
-    @Bean
+    @Bean("post")
     public PostService postContract(Web3j web3j, @Value("${post.contract.address:}") String contractAddress)
             throws Exception {
         if (StringUtils.isEmpty(contractAddress)) {
@@ -55,11 +56,12 @@ public class GeneralConfiguration {
         return new PostService(contractAddress, web3j, config);
     }
 
-    @Bean
+    @Bean("comment")
+    @DependsOn("post")
     public CommentService commentContract(Web3j web3j, @Value("${comment.contract.address:}") String contractAddress)
             throws Exception {
         if (StringUtils.isEmpty(contractAddress)) {
-            CommentStorage comment = CommentStorage.deploy(web3j, txManager(web3j), config.gas(), "0x21402B26FF8AC0C6e598f9e20BCf799706Ab63eA").send();
+            CommentStorage comment = CommentStorage.deploy(web3j, txManager(web3j), config.gas(), postContractAddress).send();
             return initCommentService(comment.getContractAddress(), web3j);
         }
         LOG.info("Using a default contract address: '{}'", contractAddress);
