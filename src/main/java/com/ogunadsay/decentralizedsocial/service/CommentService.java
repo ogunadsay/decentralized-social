@@ -4,21 +4,19 @@ import com.ogunadsay.decentralizedsocial.configuration.GeneralProperties;
 import com.ogunadsay.decentralizedsocial.model.CommentDto;
 import com.ogunadsay.decentralizedsocial.model.CommentStorage;
 import org.web3j.protocol.Web3j;
-import org.web3j.tx.ClientTransactionManager;
-import org.web3j.tx.TransactionManager;
 
 import java.math.BigInteger;
 import java.util.List;
 
-public class CommentService {
-    private final String contractAddress;
-    private final Web3j web3j;
-    private final GeneralProperties config;
+public class CommentService extends AbstractContractService<CommentStorage> {
 
     public CommentService(String contractAddress, Web3j web3j, GeneralProperties config) {
-        this.contractAddress = contractAddress;
-        this.web3j = web3j;
-        this.config = config;
+        super(contractAddress, web3j, config);
+    }
+
+    @Override
+    public CommentStorage loadContract(String accountAddress) {
+        return CommentStorage.load(contractAddress, web3j, txManager(accountAddress), config.gas());
     }
 
     public void addComment(String accountAddress, CommentDto commentDto) throws Exception {
@@ -41,14 +39,6 @@ public class CommentService {
     public void deleteComment(String accountAddress, BigInteger commentIndex) throws Exception {
         CommentStorage comment = loadContract(accountAddress);
         comment.deleteComment(commentIndex).send();
-    }
-
-    private CommentStorage loadContract(String accountAddress) {
-        return CommentStorage.load(contractAddress, web3j, txManager(accountAddress), config.gas());
-    }
-
-    private TransactionManager txManager(String accountAddress) {
-        return new ClientTransactionManager(web3j, accountAddress);
     }
 
 }

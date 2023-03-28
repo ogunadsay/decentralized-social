@@ -1,7 +1,9 @@
 package com.ogunadsay.decentralizedsocial.configuration;
 
 import com.ogunadsay.decentralizedsocial.model.CommentStorage;
+import com.ogunadsay.decentralizedsocial.model.ContractType;
 import com.ogunadsay.decentralizedsocial.model.PostStorage;
+import com.ogunadsay.decentralizedsocial.service.AbstractContractService;
 import com.ogunadsay.decentralizedsocial.service.CommentService;
 import com.ogunadsay.decentralizedsocial.service.PostService;
 import okhttp3.OkHttpClient;
@@ -45,15 +47,11 @@ public class GeneralConfiguration {
         if (StringUtils.isEmpty(contractAddress)) {
             PostStorage post = PostStorage.deploy(web3j, txManager(web3j), config.gas()).send();
             postContractAddress = post.getContractAddress();
-            return initPostService(post.getContractAddress(), web3j);
+            return (PostService) initService(post.getContractAddress(), web3j, ContractType.POST);
         }
         LOG.info("Using a default contract address: '{}'", contractAddress);
         postContractAddress = contractAddress;
-        return initPostService(contractAddress, web3j);
-    }
-
-    private PostService initPostService(String contractAddress, Web3j web3j) {
-        return new PostService(contractAddress, web3j, config);
+        return (PostService) initService(contractAddress, web3j, ContractType.POST);
     }
 
     @Bean("comment")
@@ -62,15 +60,21 @@ public class GeneralConfiguration {
             throws Exception {
         if (StringUtils.isEmpty(contractAddress)) {
             CommentStorage comment = CommentStorage.deploy(web3j, txManager(web3j), config.gas(), postContractAddress).send();
-            return initCommentService(comment.getContractAddress(), web3j);
+            return (CommentService) initService(comment.getContractAddress(), web3j, ContractType.COMMENT);
         }
         LOG.info("Using a default contract address: '{}'", contractAddress);
 
-        return initCommentService(contractAddress, web3j);
+        return (CommentService) initService(contractAddress, web3j, ContractType.COMMENT);
     }
 
-    private CommentService initCommentService(String contractAddress, Web3j web3j) {
-        return new CommentService(contractAddress, web3j, config);
+    private AbstractContractService<?> initService(String contractAddress, Web3j web3j, ContractType contractType) {
+        AbstractContractService<?> contractService;
+        switch (contractType) {
+            case POST -> contractService = new PostService(contractAddress, web3j, config);
+            case COMMENT -> contractService = new CommentService(contractAddress, web3j, config);
+            default -> throw new RuntimeException("this type is not supported");
+        }
+        return contractService;
     }
 
     protected TransactionManager txManager(Web3j web3j) {

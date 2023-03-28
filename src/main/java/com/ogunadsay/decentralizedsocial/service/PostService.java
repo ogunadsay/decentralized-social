@@ -3,21 +3,19 @@ package com.ogunadsay.decentralizedsocial.service;
 import com.ogunadsay.decentralizedsocial.configuration.GeneralProperties;
 import com.ogunadsay.decentralizedsocial.model.PostStorage;
 import org.web3j.protocol.Web3j;
-import org.web3j.tx.ClientTransactionManager;
-import org.web3j.tx.TransactionManager;
 
 import java.math.BigInteger;
 import java.util.List;
 
-public class PostService {
-    private final String contractAddress;
-    private final Web3j web3j;
-    private final GeneralProperties config;
+public class PostService extends AbstractContractService<PostStorage> {
 
     public PostService(String contractAddress, Web3j web3j, GeneralProperties config) {
-        this.contractAddress = contractAddress;
-        this.web3j = web3j;
-        this.config = config;
+        super(contractAddress, web3j, config);
+    }
+
+    @Override
+    public PostStorage loadContract(String accountAddress) {
+        return PostStorage.load(contractAddress, web3j, txManager(accountAddress), config.gas());
     }
 
     public void addPost(String accountAddress, String content) throws Exception {
@@ -40,13 +38,4 @@ public class PostService {
         PostStorage comment = loadContract(accountAddress);
         comment.deletePost(postId).send();
     }
-
-    private PostStorage loadContract(String accountAddress) {
-        return PostStorage.load(contractAddress, web3j, txManager(accountAddress), config.gas());
-    }
-
-    private TransactionManager txManager(String accountAddress) {
-        return new ClientTransactionManager(web3j, accountAddress);
-    }
-
 }
