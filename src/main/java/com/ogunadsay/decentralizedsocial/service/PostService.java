@@ -1,6 +1,7 @@
 package com.ogunadsay.decentralizedsocial.service;
 
 import com.ogunadsay.decentralizedsocial.configuration.GeneralProperties;
+import com.ogunadsay.decentralizedsocial.model.ContractType;
 import com.ogunadsay.decentralizedsocial.model.PostStorage;
 import org.web3j.protocol.Web3j;
 
@@ -16,6 +17,11 @@ public class PostService extends AbstractContractService<PostStorage> {
     @Override
     public PostStorage loadContract(String accountAddress) {
         return PostStorage.load(contractAddress, web3j, txManager(accountAddress), config.gas());
+    }
+
+    @Override
+    public ContractType getType() {
+        return ContractType.POST;
     }
 
     public void addPost(String accountAddress, String content) throws Exception {

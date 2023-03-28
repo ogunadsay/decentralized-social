@@ -1,6 +1,7 @@
 package com.ogunadsay.decentralizedsocial.service;
 
 import com.ogunadsay.decentralizedsocial.configuration.GeneralProperties;
+import com.ogunadsay.decentralizedsocial.model.ContractType;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.ClientTransactionManager;
 import org.web3j.tx.Contract;
@@ -23,4 +24,6 @@ public abstract class AbstractContractService<T extends Contract> {
     }
 
     public abstract T loadContract(String contractAddress);
+
+    public abstract ContractType getType();
 }

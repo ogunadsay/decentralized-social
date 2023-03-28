@@ -3,6 +3,7 @@ package com.ogunadsay.decentralizedsocial.service;
 import com.ogunadsay.decentralizedsocial.configuration.GeneralProperties;
 import com.ogunadsay.decentralizedsocial.model.CommentDto;
 import com.ogunadsay.decentralizedsocial.model.CommentStorage;
+import com.ogunadsay.decentralizedsocial.model.ContractType;
 import org.web3j.protocol.Web3j;
 
 import java.math.BigInteger;
@@ -17,6 +18,11 @@ public class CommentService extends AbstractContractService<CommentStorage> {
     @Override
     public CommentStorage loadContract(String accountAddress) {
         return CommentStorage.load(contractAddress, web3j, txManager(accountAddress), config.gas());
+    }
+
+    @Override
+    public ContractType getType() {
+        return ContractType.COMMENT;
     }
 
     public void addComment(String accountAddress, CommentDto commentDto) throws Exception {

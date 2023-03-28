@@ -5,6 +5,7 @@ import com.ogunadsay.decentralizedsocial.model.ContractType;
 import com.ogunadsay.decentralizedsocial.model.PostStorage;
 import com.ogunadsay.decentralizedsocial.service.AbstractContractService;
 import com.ogunadsay.decentralizedsocial.service.CommentService;
+import com.ogunadsay.decentralizedsocial.service.ContractFactory;
 import com.ogunadsay.decentralizedsocial.service.PostService;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -68,13 +69,8 @@ public class GeneralConfiguration {
     }
 
     private AbstractContractService<?> initService(String contractAddress, Web3j web3j, ContractType contractType) {
-        AbstractContractService<?> contractService;
-        switch (contractType) {
-            case POST -> contractService = new PostService(contractAddress, web3j, config);
-            case COMMENT -> contractService = new CommentService(contractAddress, web3j, config);
-            default -> throw new RuntimeException("this type is not supported");
-        }
-        return contractService;
+        ContractFactory contractFactory = new ContractFactory(contractAddress, web3j, config);
+        return contractFactory.getContractService(contractType);
     }
 
     protected TransactionManager txManager(Web3j web3j) {
