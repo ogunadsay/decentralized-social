@@ -4,7 +4,7 @@ import "./Post.sol";
 
 contract CommentStorage {
     struct Comment {
-        uint commentId;
+        uint id;
         uint postId;
         address author;
         string content;
